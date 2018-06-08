@@ -8,6 +8,7 @@ module load Megahit/v1.1.3
 module load MetaBAT/v0.32.4
 module load Bowtie2/v2.2.7
 module load samtools/v1.3.1
+module load CheckM/v1.0.7
 
 # Variables
 MEM=232000000000
@@ -48,6 +49,8 @@ for DIR in `find ./* -maxdepth 0 -type d`; do
 	
 #	metabat -i $REF -a ${DIR}/Bowtie2/${DIR}_depth.txt -o ${DIR}/Metabat/bin \
 #		--sensitive -t $NSLOTS --saveCls --unbinned --keep 2> ${DIR}/${DIR}_metabat.log
+
+	checkm lineage_wf -t $NSLOTS -x fa ${DIR}/Metabat/bin ${DIR}/CheckM
 	
 	# Mark the sample as finished
 	touch ${DIR}/pipeline.done
