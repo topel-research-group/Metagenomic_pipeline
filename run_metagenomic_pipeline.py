@@ -21,22 +21,20 @@ for DIR in `find ./* -type d`; do
 	megahit -m $MEM -1 $FILE1 -2 $FILE2 -t $NSLOTS -o ${DIR}/Megahit --out-prefix ${DIR} 2> ${DIR}/${DIR}_assemble.log
 	
 	# Bowtie2 mapping
-	DB=all_contigs_10000
-	FILE1=../00_data/Trimmed/P8352_${SAMPLE}/*R1.Pair.fastq.gz
-	FILE2=../00_data/Trimmed/P8352_${SAMPLE}/*R2.Pair.fastq.gz
+	REF=${DIR}/${DIR}.contigs.fa
 
-	bowtie2 -x $DB --no-unal --very-sensitive -p $NSLOTS --mm \
-		-1 $FILE1 -2 $FILE2 -S P8352_${SAMPLE}_${DB}.sam 2> P8352_${SAMPLE}_${DB}.log
+	bowtie2 -x $REF --no-unal --very-sensitive -p $NSLOTS --mm \
+		-1 $FILE1 -2 $FILE2 -S ${DIR}/${DIR}.sam 2> ${DIR}/${DIR}_bowtie2.log
 
-	samtools view -Sb P8352_${SAMPLE}_${DB}.sam > P8352_${SAMPLE}_${DB}.bam
-		rm P8352_${SAMPLE}_${DB}.sam
-	samtools sort P8352_${SAMPLE}_${DB}.bam -o P8352_${SAMPLE}_${DB}_sorted.bam
-		rm P8352_${SAMPLE}_${DB}.bam
+	samtools view -Sb ${DIR}/${DIR}.sam > ${DIR}/${DIR}.bam
+		rm ${DIR}/${DIR}.sam
+	samtools sort ${DIR}/${DIR}.bam -o ${DIR}/${DIR}_sorted.bam
+		rm ${DIR}/${DIR}.bam
 
 	# MetaBat binning
-	REF=${DIR}.contigs.fa
-	jgi_summarize_bam_contig_depths --outputDepth depth.txt *_sorted.bam
-	metabat -i $REF -a depth.txt -o bin --sensitive -t 40 --saveCls --unbinned --keep
+#	REF=${DIR}.contigs.fa
+#	jgi_summarize_bam_contig_depths --outputDepth depth.txt *_sorted.bam
+#	metabat -i $REF -a depth.txt -o bin --sensitive -t 40 --saveCls --unbinned --keep
 
 done
 
