@@ -13,6 +13,10 @@ module load samtools/v1.3.1
 MEM=232000000000
 
 for DIR in `find ./* -maxdepth 0 -type d`; do
+	# Make sure this sample has been analysed
+	if [ -f ${DIR}/pipeline.done ]; then
+		break
+	else
 
 	DIR=${DIR#./}
 
@@ -23,31 +27,31 @@ for DIR in `find ./* -maxdepth 0 -type d`; do
 #	megahit -m $MEM -1 $FILE1 -2 $FILE2 -t $NSLOTS -o ${DIR}/Megahit --out-prefix ${DIR} 2> ${DIR}/${DIR}_assemble.log
 	
 	# Bowtie2 mapping
-	mkdir ${DIR}/Bowtie2
+#	mkdir ${DIR}/Bowtie2
 
-#	ln -s Megahit/${DIR}.contigs.fa ${DIR}/${DIR}.contigs.fa
 	REF=${DIR}/Megahit/${DIR}.contigs.fa
-	DB=${DIR}/Bowtie2/${DIR}.contigs
-	bowtie2-build --threads $NSLOTS $REF $DB 2> ${DIR}/${DIR}_bowtie2.log
+#	DB=${DIR}/Bowtie2/${DIR}.contigs
+#	bowtie2-build --threads $NSLOTS $REF $DB 2> ${DIR}/${DIR}_bowtie2.log
 
-	bowtie2 -x $DB --no-unal --very-sensitive -p $NSLOTS --mm \
-		-1 $FILE1 -2 $FILE2 -S ${DIR}/Bowtie2/${DIR}.sam 2> ${DIR}/${DIR}_bowtie2.log
+#	bowtie2 -x $DB --no-unal --very-sensitive -p $NSLOTS --mm \
+#		-1 $FILE1 -2 $FILE2 -S ${DIR}/Bowtie2/${DIR}.sam 2> ${DIR}/${DIR}_bowtie2.log
 
-	samtools view -Sb ${DIR}/Bowtie2/${DIR}.sam > ${DIR}/Bowtie2/${DIR}.bam
-		rm ${DIR}/Bowtie2/${DIR}.sam
-	samtools sort ${DIR}/Bowtie2/${DIR}.bam -o ${DIR}/Bowtie2/${DIR}_sorted.bam
-		rm ${DIR}/Bowtie2/${DIR}.bam
-
-done
-
+#	samtools view -Sb ${DIR}/Bowtie2/${DIR}.sam > ${DIR}/Bowtie2/${DIR}.bam
+#		rm ${DIR}/Bowtie2/${DIR}.sam
+#	samtools sort ${DIR}/Bowtie2/${DIR}.bam -o ${DIR}/Bowtie2/${DIR}_sorted.bam
+#		rm ${DIR}/Bowtie2/${DIR}.bam
 
 	# MetaBat binning
 #	mkdir ${DIR}/Metabat
-#	jgi_summarize_bam_contig_depths --outputDepth ${DIR}/${DIR}_depth.txt \
-#					${DIR}/${DIR}_sorted.bam 2> ${DIR}/${DIR}_metabat.log
+#	jgi_summarize_bam_contig_depths --outputDepth ${DIR}/Bowtie2/${DIR}_depth.txt \
+#					${DIR}/Bowtie2/${DIR}_sorted.bam 2> ${DIR}/${DIR}_metabat.log
 	
-#	metabat -i $REF -a ${DIR}/${DIR}_depth.txt -o ${DIR}/bin \
+#	metabat -i $REF -a ${DIR}/Bowtie2/${DIR}_depth.txt -o ${DIR}/Metabat/bin \
 #		--sensitive -t $NSLOTS --saveCls --unbinned --keep 2> ${DIR}/${DIR}_metabat.log
-
+	
+	# Mark the sample as finished
+	touch ${DIR}/pipeline.done
+	fi 
+done
 
 
