@@ -14,7 +14,7 @@ module load CheckM/v1.0.7
 MEM=232000000000
 
 for DIR in `find ./* -maxdepth 0 -type d`; do
-	# Make sure this sample has been analysed
+	# Make sure this sample has not been analysed already
 	if [ -f ${DIR}/pipeline.done ]; then
 		continue
 	else
