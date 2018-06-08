@@ -12,7 +12,7 @@ module load samtools/v1.3.1
 # Variables
 MEM=232000000000
 
-for DIR in `find ./* -type d`; do
+for DIR in `find ./* -maxdepth 0 -type d`; do
 
 	DIR=${DIR#./}
 
@@ -20,24 +20,34 @@ for DIR in `find ./* -type d`; do
 	FILE2=${DIR}/*R2*.fastq.gz
 
 	# Megahit assembly
-	megahit -m $MEM -1 $FILE1 -2 $FILE2 -t $NSLOTS -o ${DIR}/Megahit --out-prefix ${DIR} 2> ${DIR}/${DIR}_assemble.log
+#	megahit -m $MEM -1 $FILE1 -2 $FILE2 -t $NSLOTS -o ${DIR}/Megahit --out-prefix ${DIR} 2> ${DIR}/${DIR}_assemble.log
 	
 	# Bowtie2 mapping
-	REF=${DIR}/${DIR}.contigs.fa
+	mkdir ${DIR}/Bowtie2
 
-	bowtie2 -x $REF --no-unal --very-sensitive -p $NSLOTS --mm \
-		-1 $FILE1 -2 $FILE2 -S ${DIR}/${DIR}.sam 2> ${DIR}/${DIR}_bowtie2.log
+#	ln -s Megahit/${DIR}.contigs.fa ${DIR}/${DIR}.contigs.fa
+	REF=${DIR}/Megahit/${DIR}.contigs.fa
+	DB=${DIR}/Bowtie2/${DIR}.contigs
+	bowtie2-build --threads $NSLOTS $REF $DB 2> ${DIR}/${DIR}_bowtie2.log
 
-	samtools view -Sb ${DIR}/${DIR}.sam > ${DIR}/${DIR}.bam
-		rm ${DIR}/${DIR}.sam
-	samtools sort ${DIR}/${DIR}.bam -o ${DIR}/${DIR}_sorted.bam
-		rm ${DIR}/${DIR}.bam
+	bowtie2 -x $DB --no-unal --very-sensitive -p $NSLOTS --mm \
+		-1 $FILE1 -2 $FILE2 -S ${DIR}/Bowtie2/${DIR}.sam 2> ${DIR}/${DIR}_bowtie2.log
 
-	# MetaBat binning
-	jgi_summarize_bam_contig_depths --outputDepth ${DIR}/${DIR}_depth.txt ${DIR}/${DIR}_sorted.bam
-	
-	metabat -i $REF -a ${DIR}/${DIR}_depth.txt -o ${DIR}/bin --sensitive -t $NSLOTS --saveCls --unbinned --keep
+	samtools view -Sb ${DIR}/Bowtie2/${DIR}.sam > ${DIR}/Bowtie2/${DIR}.bam
+		rm ${DIR}/Bowtie2/${DIR}.sam
+	samtools sort ${DIR}/Bowtie2/${DIR}.bam -o ${DIR}/Bowtie2/${DIR}_sorted.bam
+		rm ${DIR}/Bowtie2/${DIR}.bam
 
 done
+
+
+	# MetaBat binning
+#	mkdir ${DIR}/Metabat
+#	jgi_summarize_bam_contig_depths --outputDepth ${DIR}/${DIR}_depth.txt \
+#					${DIR}/${DIR}_sorted.bam 2> ${DIR}/${DIR}_metabat.log
+	
+#	metabat -i $REF -a ${DIR}/${DIR}_depth.txt -o ${DIR}/bin \
+#		--sensitive -t $NSLOTS --saveCls --unbinned --keep 2> ${DIR}/${DIR}_metabat.log
+
 
 
