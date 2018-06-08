@@ -10,7 +10,7 @@ module load Megahit/v1.1.3
 MEM=232000000000
 
 # Megahit assembly
-for DIR in `find . -type d`; do
+for DIR in `find ./* -type d`; do
 
 	FILE1=${DIR}/*R1.*.fastq.gz
 	FILE2=${DIR}/*R2.*.fastq.gz
