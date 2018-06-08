@@ -14,6 +14,8 @@ MEM=232000000000
 
 for DIR in `find ./* -type d`; do
 
+	DIR=${DIR#./}
+
 	FILE1=${DIR}/*R1*.fastq.gz
 	FILE2=${DIR}/*R2*.fastq.gz
 
@@ -32,9 +34,9 @@ for DIR in `find ./* -type d`; do
 		rm ${DIR}/${DIR}.bam
 
 	# MetaBat binning
-#	REF=${DIR}.contigs.fa
-#	jgi_summarize_bam_contig_depths --outputDepth depth.txt *_sorted.bam
-#	metabat -i $REF -a depth.txt -o bin --sensitive -t 40 --saveCls --unbinned --keep
+	jgi_summarize_bam_contig_depths --outputDepth ${DIR}/${DIR}_depth.txt ${DIR}/${DIR}_sorted.bam
+	
+	metabat -i $REF -a ${DIR}/${DIR}_depth.txt -o ${DIR}/bin --sensitive -t $NSLOTS --saveCls --unbinned --keep
 
 done
 
