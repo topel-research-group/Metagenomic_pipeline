@@ -73,7 +73,7 @@ for DIR in `find ./* -maxdepth 0 -type d`; do
 		--sensitive -t $NSLOTS --saveCls --unbinned --keep 2> ${DIR}/${DIR}_metabat.log
 		checkExit $? "metabat"
 
-	checkm lineage_wf -t $NSLOTS -x fa ${DIR}/Metabat/bin ${DIR}/CheckM
+	checkm lineage_wf -t $NSLOTS -x fa ${DIR}/Metabat ${DIR}/CheckM
 		checkExit $? "checkm"
 
 	# Mark the sample as finished
