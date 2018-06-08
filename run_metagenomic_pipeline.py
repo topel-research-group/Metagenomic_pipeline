@@ -10,11 +10,13 @@ module load Megahit/v1.1.3
 MEM=232000000000
 
 # Megahit assembly
-for SAMPLE in {106..150}; do
+for DIR in `find . -type d`; do
 
-	FILE1=../../00_data/Trimmed/P8352_${SAMPLE}/*R1.Pair.fastq.gz
-	FILE2=../../00_data/Trimmed/P8352_${SAMPLE}/*R2.Pair.fastq.gz
+	FILE1=${DIR}/*R1.*.fastq.gz
+	FILE2=${DIR}/*R2.*.fastq.gz
 
-	megahit -m $MEM -1 $FILE1 -2 $FILE2 -t $NSLOTS -o P8352_${SAMPLE} --out-prefix P8352_${SAMPLE} 2> P8352_${SAMPLE}_assemble.log
+	megahit -m $MEM -1 $FILE1 -2 $FILE2 -t $NSLOTS -o ${DIR} --out-prefix ${DIR} 2> ${DIR}/${DIR}_assemble.log
 
-	done
+done
+
+
