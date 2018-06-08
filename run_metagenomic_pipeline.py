@@ -1,6 +1,6 @@
 #$ -cwd
-#$ -q sandbox
-#$ -pe mpich 16
+#$ -q Annotation-3
+#$ -pe mpich 40
 #$ -S /bin/bash
 
 # Modules used
@@ -16,7 +16,7 @@ MEM=232000000000
 # Print some informative error meassages
 err() {
 	echo "$1 exited unexpectedly";
-	exit 1;
+	break;
 }
 
 # Function for checking the exit code of a child process
