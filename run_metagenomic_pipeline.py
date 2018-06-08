@@ -1,6 +1,6 @@
 #$ -cwd
-#$ -q Annotation-1
-#$ -pe mpich 40
+#$ -q sandbox
+#$ -pe mpich 16
 #$ -S /bin/bash
 
 # Modules used
