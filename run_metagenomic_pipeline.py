@@ -1,14 +1,14 @@
 #$ -cwd
-#$ -q Annotation-3
-#$ -pe mpich 40
+#$ -q Annotation-1,Annotation-2,Annotation-3,Annotation-4
+#$ -pe mpi 40
 #$ -S /bin/bash
 
 # Modules used
-module load Megahit/v1.1.3
-module load MetaBAT/v0.32.4
-module load Bowtie2/v2.2.7
-module load samtools/v1.3.1
-module load CheckM/v1.0.7
+module load Megahit/v1.1.4
+module load MetaBAT/v2.12.1
+module load Bowtie2/v2.3.4.3
+module load samtools/v1.9
+module load Anaconda2/v2018.12 # To get access to CheckM
 
 # Variables
 MEM=232000000000
